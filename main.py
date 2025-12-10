@@ -8,7 +8,7 @@ df = pd.read_excel("加油站周销量真实数据.xlsx", dtype={'ds': str})
 df['ds'] = pd.to_datetime(df['ds'] + '-1', format='%Y-W%W-%w')   # 周一为代表日
 
 # ================== 关键改动1：使用2023+2024两年完整数据训练 ==================
-train = df[df['ds'].dt.year.isin([2023, 2024])].copy()   # 以前只用2024，现在用两年！
+train = df[df['ds'].dt.year.isin([2023, 2024])].copy()   
 
 # 2. 建模（参数我又微调了一下，两年数据后更稳）
 m = Prophet(
@@ -16,7 +16,7 @@ m = Prophet(
     weekly_seasonality=False,
     seasonality_mode='multiplicative',
     changepoint_prior_scale=0.25,      # 两年数据后趋势更稳，稍微收紧一点
-    seasonality_prior_scale=20         # 季节性更强，让它多记住一点历史规律
+    seasonality_prior_scale=20         # 季节性更强，
 )
 
 m.add_regressor('is_promo', standardize=False)
@@ -51,4 +51,5 @@ print("=== 两年数据版预测完成 ===")
 print("训练数据：2023 + 2024 共104周")
 print("2025年预计总销量：", result['预测销量'].sum())
 print("第一周（W01）预测：", result.iloc[0]['预测销量'])
+
 print("最后一周（W52）预测：", result.iloc[-1]['预测销量'])
